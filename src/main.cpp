@@ -1,9 +1,23 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
 #include <iostream>
+#include <fstream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
+
+static std::string ParseShader(const std::string& filepath) {
+    std::ifstream file(filepath);
+    std::string str;
+    std::string content;
+
+    while (std::getline(file, str)) {
+        content.append(str + "\n");
+    }
+
+    return content;
+}
 
 static unsigned int CompileShader(unsigned int type, const std::string& source) {
     unsigned int id = glCreateShader(type);
@@ -95,23 +109,9 @@ int main() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    const std::string vertexShader = R"glsl(
-        #version 330 core
-        layout (location = 0) in vec4 position;
-        void main() {
-            gl_Position = position;
-        }
-    )glsl";
-
-    const char* fragmentShader = R"glsl(
-        #version 330 core
-        out vec4 colour;
-        void main() {
-            colour = vec4(1.0f, 0.5f, 0.2f, 1.0f);
-        }
-    )glsl";
-
-    unsigned int shader = CreateShader(vertexShader, fragmentShader);
+    std::string vertex_source = ParseShader("resources/Vertex.shader");
+    std::string fragment_source = ParseShader("resources/Fragment.shader");
+    unsigned int shader = CreateShader(vertex_source, fragment_source);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
