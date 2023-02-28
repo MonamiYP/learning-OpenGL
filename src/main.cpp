@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <cmath>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -41,18 +42,18 @@ static unsigned int CompileShader(unsigned int type, const std::string& source) 
     return id;
 }
 
-static unsigned int CreateShader(const std::string& vertexShader, const std::string& fragmentShader) {
+static unsigned int CreateShaderProgram(const std::string& vertexShader, const std::string& fragmentShader) {
     unsigned int program = glCreateProgram();
-    unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
-    unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
+    unsigned int vertex_shader = CompileShader(GL_VERTEX_SHADER, vertexShader);
+    unsigned int fragment_shader = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
 
-    glAttachShader(program, vs);
-    glAttachShader(program, fs);
+    glAttachShader(program, vertex_shader);
+    glAttachShader(program, fragment_shader);
     glLinkProgram(program);
     glValidateProgram(program);
 
-    glDeleteShader(vs);
-    glDeleteShader(fs);
+    glDeleteShader(vertex_shader);
+    glDeleteShader(fragment_shader);
 
     return program;
 }
@@ -82,10 +83,11 @@ int main() {
     }
 
     float vertex_positions[] = {
-        0.5f,  0.5f, 0.0f,  // top right 0
-        0.5f, -0.5f, 0.0f,  // bottom right 1
-        -0.5f, -0.5f, 0.0f,  // bottom left 2
-        -0.5f,  0.5f, 0.0f   // top left 3
+        // positions        //colors
+        0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f, // top right 0
+        0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, // bottom right 1
+        -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f, // bottom left 2
+        -0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f // top left 3
     };
     unsigned int indices[] = {
         0, 1, 2, // triangle 1
@@ -105,26 +107,36 @@ int main() {
 
     // Need to tell OpenGL how the memory is laid out
     // Which buffer it takes data from is determined by buffer currently bound to GL_ARRAY_BUFFER
-    // Location, size, type, normalised?, space between vertices (3 vertexes of type float), offset
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    // Location, size, type, normalised?, space between vertices, offset
+    // Position
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    // Color
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     std::string vertex_source = ParseShader("resources/Vertex.shader");
     std::string fragment_source = ParseShader("resources/Fragment.shader");
-    unsigned int shader = CreateShader(vertex_source, fragment_source);
+    unsigned int shader = CreateShaderProgram(vertex_source, fragment_source);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     // Render loop
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
 
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.2f, 0.4f, 0.7f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shader);
+
+        float timeValue = glfwGetTime();
+        float multipleValue = sin(timeValue) / 2.0f + 0.5f;
+        int vertexMultipleLocation = glGetUniformLocation(shader, "multiple");
+        glUniform1f(vertexMultipleLocation, multipleValue);
+
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
