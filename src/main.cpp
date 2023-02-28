@@ -5,58 +5,10 @@
 #include <fstream>
 #include <cmath>
 
+#include "headers/Shader.hpp"
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
-
-static std::string ParseShader(const std::string& filepath) {
-    std::ifstream file(filepath);
-    std::string str;
-    std::string content;
-
-    while (std::getline(file, str)) {
-        content.append(str + "\n");
-    }
-
-    return content;
-}
-
-static unsigned int CompileShader(unsigned int type, const std::string& source) {
-    unsigned int id = glCreateShader(type);
-    const char* src = source.c_str(); // Returns pointer to data in std::string
-    glShaderSource(id, 1, &src, NULL);
-    glCompileShader(id);
-
-    // Compiler error handling
-    int success;
-    char infoLog[512];
-    glGetShaderiv(id, GL_COMPILE_STATUS, &success);
-    if (success == GL_FALSE) {
-        glGetShaderInfoLog(id, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER:"<<
-        (type == GL_VERTEX_SHADER ? "VERTEX" : "FRAGMENT")
-        <<":COMPILATION_FAILED\n" << infoLog << std::endl;
-        glDeleteShader(id);
-        return 0;
-    }
-
-    return id;
-}
-
-static unsigned int CreateShaderProgram(const std::string& vertexShader, const std::string& fragmentShader) {
-    unsigned int program = glCreateProgram();
-    unsigned int vertex_shader = CompileShader(GL_VERTEX_SHADER, vertexShader);
-    unsigned int fragment_shader = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
-
-    glAttachShader(program, vertex_shader);
-    glAttachShader(program, fragment_shader);
-    glLinkProgram(program);
-    glValidateProgram(program);
-
-    glDeleteShader(vertex_shader);
-    glDeleteShader(fragment_shader);
-
-    return program;
-}
 
 int main() {
     if (!glfwInit())
@@ -115,9 +67,11 @@ int main() {
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    std::string vertex_source = ParseShader("resources/Vertex.shader");
-    std::string fragment_source = ParseShader("resources/Fragment.shader");
-    unsigned int shader = CreateShaderProgram(vertex_source, fragment_source);
+    Shader shader;
+
+    std::string vertex_source = shader.ParseShader("resources/Vertex.shader");
+    std::string fragment_source = shader.ParseShader("resources/Fragment.shader");
+    shader.CreateShaderProgram(vertex_source, fragment_source);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -130,11 +84,11 @@ int main() {
         glClearColor(0.2f, 0.4f, 0.7f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shader);
+        shader.Use();
 
         float timeValue = glfwGetTime();
         float multipleValue = sin(timeValue) / 2.0f + 0.5f;
-        int vertexMultipleLocation = glGetUniformLocation(shader, "multiple");
+        int vertexMultipleLocation = glGetUniformLocation(shader.GetID(), "multiple");
         glUniform1f(vertexMultipleLocation, multipleValue);
 
         glBindVertexArray(VAO);
@@ -147,7 +101,7 @@ int main() {
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
-    glDeleteProgram(shader);
+    glDeleteProgram(shader.GetID());
 
     glfwTerminate();
 }
