@@ -1,4 +1,4 @@
-#include "headers/Shader.hpp"
+#include "Shader.hpp"
 
 Shader::Shader() {}
 
@@ -44,8 +44,6 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
         glDeleteShader(id);
         return 0;
     }
-
-    // Delete shaders?
 
     return id;
 }
