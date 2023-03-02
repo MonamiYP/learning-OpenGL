@@ -79,7 +79,6 @@ int main() {
     VertexBuffer VBO2(rect_vertex, sizeof(rect_vertex));
     VertexBufferLayout layout2;
     IndexBuffer IBO2(rect_indices, 6);
-    // Location, size, type, normalisbed?, stride, offset
     layout2.AddAttribute(3);
     VAO2.AddBuffer(VBO2, layout2);
     layout2.AddAttribute(3);
@@ -118,12 +117,12 @@ int main() {
         GLCall(glClearColor(0.2f, 0.4f, 0.7f, 1.0f));
         GLCall(glClear(GL_COLOR_BUFFER_BIT));
 
-        GLCall(shader.Use());
+        GLCall(shader.Bind());
 
         float timeValue = glfwGetTime();
         float multipleValue = sin(timeValue) / 2.0f + 0.5f;
-        int vertexMultipleLocation = glGetUniformLocation(shader.GetID(), "multiple");
-        glUniform1f(vertexMultipleLocation, multipleValue);
+
+        shader.SetUniform1f("multiple", multipleValue);
 
         VAO.Bind();
         GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
@@ -133,8 +132,6 @@ int main() {
         glfwSwapBuffers(window); // Double buffer for rendering, front buffer contains final output while rendering happens on the back. Then it is swapped
         glfwPollEvents(); // Checks if any events are triggered
     }
-
-    glDeleteProgram(shader.GetID());
 
     glfwTerminate();
 }
