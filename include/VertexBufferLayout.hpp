@@ -17,7 +17,7 @@ class VertexBufferLayout {
     public:
         VertexBufferLayout() : m_stride(0) {}
 
-        void Push(unsigned int size) {
+        void AddAttribute(unsigned int size) {
             m_attributes.push_back({ GL_FLOAT, size, GL_FALSE });
             m_stride += sizeof(GLfloat) * size;
         }

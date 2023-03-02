@@ -5,10 +5,10 @@
 #include <fstream>
 #include <cmath>
 
-#include "Shader.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+#include "Shader.hpp"
 #include "Renderer.hpp"
 #include "VertexBuffer.hpp"
 #include "IndexBuffer.hpp"
@@ -54,35 +54,36 @@ int main() {
         1, 2, 3 // triangle 2
     };
 
-    // float rect_vertex[] = {
-    //     -1.0f, -1.0f, 0.0f,  0.0f, 0.0f, 1.0f,// bottom left
-    //     -1.0f, -0.6f, 0.0f,  0.0f, 0.0f, 1.0f,// top left
-    //     -0.6f, -0.6f, 0.0f,  0.0f, 0.0f, 1.0f,// top right
-    //     -0.6f, -1.0f, 0.0f,  0.0f, 0.0f, 1.0f// bottom right
-    // };
-    // unsigned int rect_indices[] = {
-    //     0, 1, 2,
-    //     2, 3, 0
-    // };
+    float rect_vertex[] = {
+        -1.0f, -1.0f, 0.0f,  0.0f, 0.0f, 1.0f,// bottom left
+        -1.0f, -0.6f, 0.0f,  0.0f, 0.0f, 1.0f,// top left
+        -0.6f, -0.6f, 0.0f,  0.0f, 0.0f, 1.0f,// top right
+        -0.6f, -1.0f, 0.0f,  0.0f, 0.0f, 1.0f// bottom right
+    };
+    unsigned int rect_indices[] = {
+        0, 1, 2,
+        2, 3, 0
+    };
 
     VertexArray VAO;
     VertexBuffer VBO(vertex, sizeof(vertex));
     VertexBufferLayout layout;
-    layout.Push(3);
+    layout.AddAttribute(3);
     VAO.AddBuffer(VBO, layout);
-    layout.Push(3);
+    layout.AddAttribute(3);
     VAO.AddBuffer(VBO, layout);
 
     IndexBuffer IBO(indices, 6);
 
-    // glBindVertexArray(VAO[1]);
-    // VertexBuffer VBO(rect_vertex, sizeof(rect_vertex));
-    // IndexBuffer IBO(rect_indices, 6);
-    // Location, size, type, normalised?, stride, offset
-    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    // glEnableVertexAttribArray(0);
-    // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
-    // glEnableVertexAttribArray(1);
+    VertexArray VAO2;
+    VertexBuffer VBO2(rect_vertex, sizeof(rect_vertex));
+    VertexBufferLayout layout2;
+    IndexBuffer IBO2(rect_indices, 6);
+    // Location, size, type, normalisbed?, stride, offset
+    layout2.AddAttribute(3);
+    VAO2.AddBuffer(VBO2, layout2);
+    layout2.AddAttribute(3);
+    VAO2.AddBuffer(VBO2, layout2);
 
     Shader shader;
 
@@ -126,8 +127,8 @@ int main() {
 
         VAO.Bind();
         GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
-        // glBindVertexArray(VAO[1]);
-        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        VAO2.Bind();
+        GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
 
         glfwSwapBuffers(window); // Double buffer for rendering, front buffer contains final output while rendering happens on the back. Then it is swapped
         glfwPollEvents(); // Checks if any events are triggered
