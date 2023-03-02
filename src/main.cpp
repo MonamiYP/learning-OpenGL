@@ -12,6 +12,7 @@
 #include "Renderer.hpp"
 #include "VertexBuffer.hpp"
 #include "IndexBuffer.hpp"
+#include "VertexArray.hpp"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -53,37 +54,31 @@ int main() {
         1, 2, 3 // triangle 2
     };
 
-    float rect_vertex[] = {
-        -1.0f, -1.0f, 0.0f,  0.0f, 0.0f, 1.0f,// bottom left
-        -1.0f, -0.6f, 0.0f,  0.0f, 0.0f, 1.0f,// top left
-        -0.6f, -0.6f, 0.0f,  0.0f, 0.0f, 1.0f,// top right
-        -0.6f, -1.0f, 0.0f,  0.0f, 0.0f, 1.0f// bottom right
-    };
-    unsigned int rect_indices[] = {
-        0, 1, 2,
-        2, 3, 0
-    };
+    // float rect_vertex[] = {
+    //     -1.0f, -1.0f, 0.0f,  0.0f, 0.0f, 1.0f,// bottom left
+    //     -1.0f, -0.6f, 0.0f,  0.0f, 0.0f, 1.0f,// top left
+    //     -0.6f, -0.6f, 0.0f,  0.0f, 0.0f, 1.0f,// top right
+    //     -0.6f, -1.0f, 0.0f,  0.0f, 0.0f, 1.0f// bottom right
+    // };
+    // unsigned int rect_indices[] = {
+    //     0, 1, 2,
+    //     2, 3, 0
+    // };
 
-    // Vertex buffer (VBO) is a blob of memory (in GPU), in this case it stores vertex data
-    unsigned int VAO[2];
-    glGenVertexArrays(2, VAO);
-
-    glBindVertexArray(VAO[0]);
+    VertexArray VAO;
     VertexBuffer VBO(vertex, sizeof(vertex));
+    VertexBufferLayout layout;
+    layout.Push(3);
+    VAO.AddBuffer(VBO, layout);
+    layout.Push(3);
+    VAO.AddBuffer(VBO, layout);
+
     IndexBuffer IBO(indices, 6);
-    // Need to tell OpenGL how the memory is laid out
-    // Which buffer it takes data from is determined by buffer currently bound to GL_ARRAY_BUFFER
-    // Location, size, type, normalised?, space between vertices, offset
-    // Position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // Color
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
-    glEnableVertexAttribArray(1);
 
     // glBindVertexArray(VAO[1]);
     // VertexBuffer VBO(rect_vertex, sizeof(rect_vertex));
     // IndexBuffer IBO(rect_indices, 6);
+    // Location, size, type, normalised?, stride, offset
     // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     // glEnableVertexAttribArray(0);
     // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
@@ -94,8 +89,6 @@ int main() {
     std::string vertex_source = shader.ParseShader("res/Vertex.shader");
     std::string fragment_source = shader.ParseShader("res/Fragment.shader");
     shader.CreateShaderProgram(vertex_source, fragment_source);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     // unsigned int texture;
     // glGenTextures(1, &texture);
@@ -131,8 +124,8 @@ int main() {
         int vertexMultipleLocation = glGetUniformLocation(shader.GetID(), "multiple");
         glUniform1f(vertexMultipleLocation, multipleValue);
 
-        glBindVertexArray(VAO[0]);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        VAO.Bind();
+        GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
         // glBindVertexArray(VAO[1]);
         // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -140,7 +133,6 @@ int main() {
         glfwPollEvents(); // Checks if any events are triggered
     }
 
-    glDeleteVertexArrays(2, VAO);
     glDeleteProgram(shader.GetID());
 
     glfwTerminate();
