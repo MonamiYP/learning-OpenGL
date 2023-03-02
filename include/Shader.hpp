@@ -5,8 +5,6 @@
 #include <fstream>
 #include <unordered_map>
 
-#include "Renderer.hpp"
-
 class Shader {
     private:
         unsigned int m_rendererID;
@@ -15,8 +13,8 @@ class Shader {
         Shader() {}
         ~Shader() {}
 
-        void Bind();
-        void Unbind();
+        void Bind() const;
+        void Unbind() const;
 
         unsigned int CompileShader(unsigned int type, const std::string& source);
         std::string ParseShader(const std::string& filepath);

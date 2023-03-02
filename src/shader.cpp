@@ -1,10 +1,11 @@
 #include "Shader.hpp"
+#include "Renderer.hpp"
 
-void Shader::Bind() {
+void Shader::Bind() const {
     glUseProgram(m_rendererID);
 }
 
-void Shader::Unbind() {
+void Shader::Unbind() const {
     glUseProgram(0);
 }
 

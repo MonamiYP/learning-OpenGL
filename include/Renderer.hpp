@@ -1,8 +1,12 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 #include <iostream>
 #include <cassert>
+
+#include "VertexArray.hpp"
+#include "IndexBuffer.hpp"
+#include "Shader.hpp"
 
 // #define ASSERT(x) if (!(x)) __debugbreak();
 #define GLCall(x) GLClearError();\
@@ -11,3 +15,10 @@
 
 void GLClearError();
 bool GLLogCall(const char* function, const char* file, int line);
+
+class Renderer {
+    private:
+    public:
+    void Draw(const VertexArray& VAO, const IndexBuffer& IBO, const Shader& shader) const;
+    void Clear() const;
+};

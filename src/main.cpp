@@ -11,6 +11,7 @@
 #include "Shader.hpp"
 #include "Renderer.hpp"
 #include "VertexBuffer.hpp"
+#include "VertexBufferLayout.hpp"
 #include "IndexBuffer.hpp"
 #include "VertexArray.hpp"
 
@@ -69,7 +70,6 @@ int main() {
     VertexBuffer VBO(vertex, sizeof(vertex));
     VertexBufferLayout layout;
     layout.AddAttribute(3);
-    VAO.AddBuffer(VBO, layout);
     layout.AddAttribute(3);
     VAO.AddBuffer(VBO, layout);
 
@@ -80,7 +80,6 @@ int main() {
     VertexBufferLayout layout2;
     IndexBuffer IBO2(rect_indices, 6);
     layout2.AddAttribute(3);
-    VAO2.AddBuffer(VBO2, layout2);
     layout2.AddAttribute(3);
     VAO2.AddBuffer(VBO2, layout2);
 
@@ -89,6 +88,7 @@ int main() {
     std::string vertex_source = shader.ParseShader("res/Vertex.shader");
     std::string fragment_source = shader.ParseShader("res/Fragment.shader");
     shader.CreateShaderProgram(vertex_source, fragment_source);
+    shader.Bind();
 
     // unsigned int texture;
     // glGenTextures(1, &texture);
@@ -110,25 +110,21 @@ int main() {
     // }
     // stbi_image_free(image_data);
 
+    Renderer renderer;
     // Render loop
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
 
-        GLCall(glClearColor(0.2f, 0.4f, 0.7f, 1.0f));
-        GLCall(glClear(GL_COLOR_BUFFER_BIT));
-
-        GLCall(shader.Bind());
+        renderer.Clear();
 
         float timeValue = glfwGetTime();
         float multipleValue = sin(timeValue) / 2.0f + 0.5f;
 
         shader.SetUniform1f("multiple", multipleValue);
 
-        VAO.Bind();
-        GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
-        VAO2.Bind();
-        GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
-
+        renderer.Draw(VAO, IBO, shader);
+        renderer.Draw(VAO2, IBO2, shader);
+        
         glfwSwapBuffers(window); // Double buffer for rendering, front buffer contains final output while rendering happens on the back. Then it is swapped
         glfwPollEvents(); // Checks if any events are triggered
     }

@@ -2,8 +2,8 @@
 
 #include <glad/glad.h>
 #include "VertexBuffer.hpp"
-#include "VertexBufferLayout.hpp"
-#include "Renderer.hpp"
+
+class VertexBufferLayout;
 
 class VertexArray {
     private:
