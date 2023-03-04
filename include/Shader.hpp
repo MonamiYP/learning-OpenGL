@@ -22,4 +22,5 @@ class Shader {
 
         int GetUniformLocation(const std::string& name);
         void SetUniform1f(const std::string& name, float x);
+        void SetUniform1i(const std::string& name, int x);
 };
