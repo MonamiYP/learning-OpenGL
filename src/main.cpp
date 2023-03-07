@@ -1,6 +1,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include <iostream>
 #include <fstream>
 #include <cmath>
@@ -72,9 +76,7 @@ int main() {
     layout.AddAttribute(3);
     layout.AddAttribute(2);
     VAO.AddBuffer(VBO, layout);
-
     IndexBuffer IBO(indices, 6);
-
     VertexArray VAO2;
     VertexBuffer VBO2(rect_vertex, sizeof(rect_vertex));
     VertexBufferLayout layout2;
@@ -85,7 +87,6 @@ int main() {
     VAO2.AddBuffer(VBO2, layout2);
 
     Shader shader;
-
     std::string vertex_source = shader.ParseShader("res/Vertex.shader");
     std::string fragment_source = shader.ParseShader("res/Fragment.shader");
     shader.CreateShaderProgram(vertex_source, fragment_source);
@@ -93,10 +94,9 @@ int main() {
 
     Texture texture("res/assets/container.jpeg");
     texture.Bind();
-    shader.SetUniform1i("u_texture", 0);
+    shader.SetInt("u_texture", 0);
 
     Renderer renderer;
-    // Render loop
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
 
@@ -105,7 +105,13 @@ int main() {
         float timeValue = glfwGetTime();
         float multipleValue = sin(timeValue) / 2.0f + 0.5f;
 
-        shader.SetUniform1f("multiple", multipleValue);
+        glm::mat4 trans = glm::mat4(1.0f);
+        //trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));
+        trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+        trans = glm::rotate(trans, timeValue, glm::vec3(0.0f, 0.0f, 1.0f));
+
+        shader.SetFloat("multiple", multipleValue);
+        shader.SetMatrix4("transform", trans);
 
         renderer.Draw(VAO, IBO, shader);
         renderer.Draw(VAO2, IBO2, shader);

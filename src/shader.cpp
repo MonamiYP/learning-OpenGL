@@ -71,10 +71,14 @@ int Shader::GetUniformLocation(const std::string& name) {
     return location;
 }
 
-void Shader::SetUniform1f(const std::string& name, float value) {
+void Shader::SetFloat(const std::string& name, float value) {
     GLCall(glUniform1f(GetUniformLocation(name), value));
 }
 
-void Shader::SetUniform1i(const std::string& name, int value) {
+void Shader::SetInt(const std::string& name, int value) {
     GLCall(glUniform1i(GetUniformLocation(name), value));
+}
+
+void Shader::SetMatrix4(const std::string& name, const glm::mat4& matrix) {
+    GLCall(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]));
 }
