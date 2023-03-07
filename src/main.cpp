@@ -44,47 +44,79 @@ int main() {
         return -1;
     }
 
-    float vertex[] = {
-        // positions        // colors
-        0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top right 0
-        0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // bottom right 1
-        -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left 2
-        -0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f // top left 3
-        
-    };
-    unsigned int indices[] = {
-        0, 1, 2, // triangle 1
-        1, 2, 3 // triangle 2
-    };
+    glEnable(GL_DEPTH_TEST);
 
-    float rect_vertex[] = {
-        // positions         // colors          // texture coords
-        -1.0f, -1.0f, 0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f,  // bottom left
-        -1.0f, -0.6f, 0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 1.0f,  // top left
-        -0.6f, -0.6f, 0.0f,  0.0f, 0.0f, 1.0f,  1.0f, 1.0f,  // top right
-        -0.6f, -1.0f, 0.0f,  0.0f, 0.0f, 1.0f,  1.0f, 0.0f   // bottom right
-    };
-    unsigned int rect_indices[] = {
-        0, 1, 2,
-        2, 3, 0
-    };
+    // float vertex[] = {
+    //     // positions        // colors         //texture coords
+    //     0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top right 0
+    //     0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // bottom right 1
+    //     -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left 2
+    //     -0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f // top left 3  
+    // };
+
+    float cube_vertices[] = {
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+};
+    // unsigned int indices[] = {
+    //     0, 1, 2, // triangle 1
+    //     2, 3, 0 // triangle 2
+    // };
+
+    // VertexArray VAO;
+    // VertexBuffer VBO(vertex, sizeof(vertex));
+    // VertexBufferLayout layout;
+    // layout.AddAttribute(3);
+    // layout.AddAttribute(3);
+    // layout.AddAttribute(2);
+    // VAO.AddBuffer(VBO, layout);
+    // IndexBuffer IBO(indices, 6);
 
     VertexArray VAO;
-    VertexBuffer VBO(vertex, sizeof(vertex));
+    VertexBuffer VBO(cube_vertices, sizeof(cube_vertices));
     VertexBufferLayout layout;
-    layout.AddAttribute(3);
     layout.AddAttribute(3);
     layout.AddAttribute(2);
     VAO.AddBuffer(VBO, layout);
-    IndexBuffer IBO(indices, 6);
-    VertexArray VAO2;
-    VertexBuffer VBO2(rect_vertex, sizeof(rect_vertex));
-    VertexBufferLayout layout2;
-    IndexBuffer IBO2(rect_indices, 6);
-    layout2.AddAttribute(3);
-    layout2.AddAttribute(3);
-    layout2.AddAttribute(2);
-    VAO2.AddBuffer(VBO2, layout2);
 
     Shader shader;
     std::string vertex_source = shader.ParseShader("res/Vertex.shader");
@@ -105,16 +137,21 @@ int main() {
         float timeValue = glfwGetTime();
         float multipleValue = sin(timeValue) / 2.0f + 0.5f;
 
-        glm::mat4 trans = glm::mat4(1.0f);
-        //trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));
-        trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
-        trans = glm::rotate(trans, timeValue, glm::vec3(0.0f, 0.0f, 1.0f));
+        shader.SetFloat("u_multiple", multipleValue);
 
-        shader.SetFloat("multiple", multipleValue);
-        shader.SetMatrix4("transform", trans);
+        glm::mat4 model = glm::mat4(1.0f);
+        glm::mat4 view = glm::mat4(1.0f);
+        glm::mat4 projection = glm::mat4(1.0f);
+        model = glm::rotate(model, timeValue * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        projection = glm::perspective(glm::radians(45.0f), 640.0f/480.0f, 0.1f, 100.0f);
 
-        renderer.Draw(VAO, IBO, shader);
-        renderer.Draw(VAO2, IBO2, shader);
+        shader.SetMatrix4("u_model", model);
+        shader.SetMatrix4("u_view", view);
+        shader.SetMatrix4("u_projection", projection);
+
+        //renderer.Draw(VAO, IBO, shader);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
         
         glfwSwapBuffers(window); // Double buffer for rendering, front buffer contains final output while rendering happens on the back. Then it is swapped
         glfwPollEvents(); // Checks if any events are triggered
