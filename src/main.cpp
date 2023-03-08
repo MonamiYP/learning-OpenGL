@@ -20,9 +20,10 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 void mouse_callback(GLFWwindow* window, double xPos, double yPos);
+void scroll_callback(GLFWwindow* window, double xScroll, double yScroll);
 
-const float WINDOW_WIDTH = 640.0f;
-const float WINDOW_HEIGHT = 480.0f;
+const float WINDOW_WIDTH = 1200.0f;
+const float WINDOW_HEIGHT = 800.0f;
 
 glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -56,6 +57,7 @@ int main() {
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -141,7 +143,9 @@ glm::vec3 cubePositions[] = {
     shader.SetInt("u_texture", 0);
 
     Renderer renderer;
+
     glfwSetCursorPos(window, lastX, lastY);
+
     while (!glfwWindowShouldClose(window)) {
         float currentTime = glfwGetTime();
         deltaTime = currentTime - lastTime;
@@ -151,9 +155,8 @@ glm::vec3 cubePositions[] = {
 
         renderer.Clear();
 
-        glm::mat4 projection = glm::mat4(1.0f);
         glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-        projection = glm::perspective(glm::radians(50.0f), WINDOW_WIDTH/WINDOW_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(fov), WINDOW_WIDTH/WINDOW_HEIGHT, 0.1f, 100.0f);
 
         shader.SetMatrix4("u_view", view);
         shader.SetMatrix4("u_projection", projection);
@@ -175,6 +178,12 @@ glm::vec3 cubePositions[] = {
     glfwTerminate();
 }
 
+void scroll_callback(GLFWwindow* window, double xScroll, double yScroll) {
+    fov -= yScroll;
+    if (fov < 1.0f) { fov = 1.0f; }
+    if (fov > 60.0f) { fov = 60.0f; }
+}
+
 void mouse_callback(GLFWwindow* window, double xPos, double yPos) {
     float xOffset = xPos - lastX;
     float yOffset = lastY - yPos;
@@ -182,13 +191,12 @@ void mouse_callback(GLFWwindow* window, double xPos, double yPos) {
     lastY = yPos;
 
     float sensitivity = 0.1f;
+    if (fov < 10.0f) { sensitivity = 0.01f; }
     xOffset *= sensitivity;
     yOffset *= sensitivity;
 
     yaw += xOffset;
     pitch += yOffset;
-
-    std::cout << yaw << ", " << pitch << std::endl;
 
     if (pitch > 89.0f) { pitch = 89.0f; }
     if (pitch < -89.0f) { pitch = -89.0f; }
@@ -205,7 +213,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 }
 
 void processInput(GLFWwindow* window) {
-    float cameraSpeed = 2.5f * deltaTime;
+    float cameraSpeed = 5.0f * deltaTime;
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
