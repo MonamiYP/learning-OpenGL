@@ -23,7 +23,8 @@ void processInput(GLFWwindow* window);
 void mouse_callback(GLFWwindow* window, double xPos, double yPos);
 void scroll_callback(GLFWwindow* window, double xScroll, double yScroll);
 
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 8.0f));
+glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
 const float WINDOW_WIDTH = 1200.0f;
 const float WINDOW_HEIGHT = 800.0f;
@@ -64,79 +65,69 @@ int main() {
     glEnable(GL_DEPTH_TEST);
 
     float cube_vertices[] = {
-    // color              // texture
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,
+     0.5f, -0.5f, -0.5f,
+     0.5f,  0.5f, -0.5f,
+     0.5f,  0.5f, -0.5f,
+    -0.5f,  0.5f, -0.5f,
+    -0.5f, -0.5f, -0.5f,
 
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,
+     0.5f, -0.5f,  0.5f,
+     0.5f,  0.5f,  0.5f,
+     0.5f,  0.5f,  0.5f,
+    -0.5f,  0.5f,  0.5f,
+    -0.5f, -0.5f,  0.5f,
 
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,
+    -0.5f,  0.5f, -0.5f,
+    -0.5f, -0.5f, -0.5f,
+    -0.5f, -0.5f, -0.5f,
+    -0.5f, -0.5f,  0.5f,
+    -0.5f,  0.5f,  0.5f,
 
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,
+     0.5f,  0.5f, -0.5f,
+     0.5f, -0.5f, -0.5f,
+     0.5f, -0.5f, -0.5f,
+     0.5f, -0.5f,  0.5f,
+     0.5f,  0.5f,  0.5f,
 
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,
+     0.5f, -0.5f, -0.5f,
+     0.5f, -0.5f,  0.5f,
+     0.5f, -0.5f,  0.5f,
+    -0.5f, -0.5f,  0.5f,
+    -0.5f, -0.5f, -0.5f,
 
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+    -0.5f,  0.5f, -0.5f,
+     0.5f,  0.5f, -0.5f,
+     0.5f,  0.5f,  0.5f,
+     0.5f,  0.5f,  0.5f,
+    -0.5f,  0.5f,  0.5f,
+    -0.5f,  0.5f, -0.5f
 };
 
-glm::vec3 cubePositions[] = {
-    glm::vec3( 0.0f,  0.0f,  0.0f), 
-    glm::vec3( 2.0f,  5.0f, -15.0f), 
-    glm::vec3(-1.5f, -2.2f, -2.5f),  
-    glm::vec3(-3.8f, -2.0f, -12.3f),  
-    glm::vec3( 2.4f, -0.4f, -3.5f),  
-    glm::vec3(-1.7f,  3.0f, -7.5f),  
-    glm::vec3( 1.3f, -2.0f, -2.5f),  
-    glm::vec3( 1.5f,  2.0f, -2.5f), 
-    glm::vec3( 1.5f,  0.2f, -1.5f), 
-    glm::vec3(-1.3f,  1.0f, -1.5f)
-};
-
-    VertexArray VAO;
-    VertexBuffer VBO(cube_vertices, sizeof(cube_vertices));
+    VertexArray cube_VAO;
+    VertexBuffer cube_VBO(cube_vertices, sizeof(cube_vertices));
     VertexBufferLayout layout;
     layout.AddAttribute(3);
-    layout.AddAttribute(2);
-    VAO.AddBuffer(VBO, layout);
+    cube_VAO.AddBuffer(cube_VBO, layout);
+
+    VertexArray lightVAO;
+    VertexBufferLayout light_layout;
+    light_layout.AddAttribute(3);
+    lightVAO.AddBuffer(cube_VBO, light_layout);
 
     Shader shader;
-    std::string vertex_source = shader.ParseShader("res/Vertex.shader");
-    std::string fragment_source = shader.ParseShader("res/Fragment.shader");
+    std::string vertex_source = shader.ParseShader("res/cube.vs");
+    std::string fragment_source = shader.ParseShader("res/cube.fs");
     shader.CreateShaderProgram(vertex_source, fragment_source);
-    shader.Bind();
 
-    Texture texture("res/assets/container.jpeg");
-    texture.Bind();
-    shader.SetInt("u_texture", 0);
+    Shader lightShader;
+    std::string light_fragment_source = lightShader.ParseShader("res/light.fs");
+    lightShader.CreateShaderProgram(vertex_source, light_fragment_source);
+    lightShader.Bind();
 
     Renderer renderer;
 
@@ -149,21 +140,32 @@ glm::vec3 cubePositions[] = {
 
         renderer.Clear();
 
+        // Render cube
+        shader.Bind();
+        shader.SetVector4("u_cubeColour", 1.0f, 0.5f, 0.31f, 1.0f);
+        shader.SetVector4("u_lightColour", 1.0f, 1.0f, 1.0f, 1.0f);
+
         glm::mat4 view = camera.GetCameraView();
         glm::mat4 projection = glm::perspective(camera.GetFOV(), WINDOW_WIDTH/WINDOW_HEIGHT, 0.1f, 100.0f);
-
+        glm::mat4 model = glm::mat4(1.0f);
         shader.SetMatrix4("u_view", view);
         shader.SetMatrix4("u_projection", projection);
+        shader.SetMatrix4("u_model", model);
 
-        //renderer.Draw(VAO, IBO, shader);
+        cube_VAO.Bind();
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
-        for (unsigned int i = 0; i < 10; i++) {
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, cubePositions[i]);
-            model = glm::rotate(model, glm::radians(20.0f * i), glm::vec3(1.0f, 0.3f, 0.5f));
-            shader.SetMatrix4("u_model", model);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
+        // Render light
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, lightPos);
+        model = glm::scale(model, glm::vec3(0.2f));
+        lightShader.Bind();
+        lightShader.SetMatrix4("u_view", view);
+        lightShader.SetMatrix4("u_projection", projection);
+        lightShader.SetMatrix4("u_model", model);
+
+        lightVAO.Bind();
+        glDrawArrays(GL_TRIANGLES, 0, 36);
         
         glfwSwapBuffers(window);
         glfwPollEvents();
