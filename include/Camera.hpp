@@ -35,4 +35,5 @@ class Camera {
         void UpdateVectors();
 
         float GetFOV();
+        glm::vec3 GetPosition();
 };

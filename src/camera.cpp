@@ -58,3 +58,7 @@ void Camera::UpdateVectors() {
 float Camera::GetFOV() {
     return glm::radians(m_fov);
 }
+
+glm::vec3 Camera::GetPosition() {
+    return m_position;
+}
