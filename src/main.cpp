@@ -144,12 +144,17 @@ int main() {
 
         // Render cube
         shader.Bind();
-        shader.SetVector3("u_cubeColour", 1.0f, 0.5f, 0.31f);
-        shader.SetVector3("u_lightColour", 1.0f, 1.0f, 1.0f);
-        shader.SetVector3("u_lightPos", lightPos);
-
         glm::vec3 viewPos = camera.GetPosition();
         shader.SetVector3("u_viewPos", viewPos);
+        shader.SetVector3("material.ambient", 1.0f, 0.5f, 0.31f);
+        shader.SetVector3("material.diffuse", 1.0f, 0.5f, 0.31f);
+        shader.SetVector3("material.specular", 0.5f, 0.5f, 0.5f);
+        shader.SetFloat("material.shininess", 32.0f);
+
+        shader.SetVector3("light.position", lightPos);
+        shader.SetVector3("light.ambient",  0.2f, 0.2f, 0.2f);
+        shader.SetVector3("light.diffuse",  0.5f, 0.5f, 0.5f);
+        shader.SetVector3("light.specular", 1.0f, 1.0f, 1.0f);
 
         glm::mat4 view = camera.GetCameraView();
         glm::mat4 projection = glm::perspective(camera.GetFOV(), WINDOW_WIDTH/WINDOW_HEIGHT, 0.1f, 100.0f);
