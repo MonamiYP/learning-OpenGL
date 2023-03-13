@@ -22,6 +22,10 @@ class VertexBufferLayout {
             m_stride += sizeof(GLfloat) * size;
         }
 
+        void IgnoreAttribute(unsigned int size) {
+            m_stride += sizeof(GLfloat) * size;
+        }
+
         inline const std::vector<VertexBufferAttributes> GetAttributes() const& { return m_attributes; }
         inline unsigned int GetStride() const { return m_stride; }
 };

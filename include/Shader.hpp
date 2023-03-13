@@ -24,6 +24,9 @@ class Shader {
         int GetUniformLocation(const std::string& name);
         void SetFloat(const std::string& name, float value);
         void SetInt(const std::string& name, int value);
-        void SetVector4(const std::string& name, float x, float y, float z, float a);
+        void SetVector3(const std::string& name, glm::vec3& vector);
+        void SetVector3(const std::string& name, float v1, float v2, float v3);
+        void SetVector4(const std::string& name, glm::vec4& vector);
+        void SetVector4(const std::string& name, float v1, float v2, float v3, float v4);
         void SetMatrix4(const std::string& name, const glm::mat4& matrix);
 };
