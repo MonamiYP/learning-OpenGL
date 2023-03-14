@@ -24,7 +24,6 @@ void mouse_callback(GLFWwindow* window, double xPos, double yPos);
 void scroll_callback(GLFWwindow* window, double xScroll, double yScroll);
 
 Camera camera(glm::vec3(0.0f, 0.0f, 8.0f));
-glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
 const float WINDOW_WIDTH = 1200.0f;
 const float WINDOW_HEIGHT = 800.0f;
@@ -110,9 +109,9 @@ int main() {
     };
 
     glm::vec3 cubePositions[] = {
-    glm::vec3( 0.0f,  0.0f,  0.0f),
-    glm::vec3( 2.0f,  5.0f, -15.0f),
-    glm::vec3(-1.5f, -2.2f, -2.5f),
+        glm::vec3( 0.0f,  0.0f,  0.0f),
+        glm::vec3( 2.0f,  5.0f, -15.0f),
+        glm::vec3(-1.5f, -2.2f, -2.5f),
     glm::vec3(-3.8f, -2.0f, -12.3f),
     glm::vec3( 2.4f, -0.4f, -3.5f),
     glm::vec3(-1.7f,  3.0f, -7.5f),
@@ -120,6 +119,13 @@ int main() {
     glm::vec3( 1.5f,  2.0f, -2.5f),
     glm::vec3( 1.5f,  0.2f, -1.5f),
     glm::vec3(-1.3f,  1.0f, -1.5f)
+    };
+
+    glm::vec3 pointLightPositions[] = {
+	    glm::vec3( 0.7f,  0.2f,  2.0f),
+	    glm::vec3( 2.3f, -3.3f, -4.0f),
+	    glm::vec3(-4.0f,  2.0f, -12.0f),
+	    glm::vec3( 0.0f,  0.0f, -3.0f)
     };
 
     VertexArray cube_VAO;
@@ -172,19 +178,55 @@ int main() {
         shader.SetVector3("u_viewPos", viewPos);
         shader.SetFloat("material.shininess", 32.0f);
 
-        //shader.SetVector3("light.position", lightPos);
-        //shader.SetVector3("light.direction", -0.2f, -1.0f, -0.3f); 	    
-        shader.SetVector3("light.ambient",  0.1f, 0.1f, 0.1f);
-        shader.SetVector3("light.diffuse",  0.8f, 0.8f, 0.8f);
-        shader.SetVector3("light.specular", 1.0f, 1.0f, 1.0f);
-        shader.SetFloat("light.constant", 1.0f);
-        shader.SetFloat("light.linear", 0.09f);
-        shader.SetFloat("light.quadratic", 0.032f);
-
-        shader.SetVector3("light.position", viewPos);
-        shader.SetVector3("light.direction", viewForwardDir);
-        shader.SetFloat("light.cutOff", glm::cos(glm::radians(10.5f)));
-        shader.SetFloat("light.outerCutOff", glm::cos(glm::radians(12.5f)));
+        // directional light
+        shader.SetVector3("dirLight.direction", -0.2f, -1.0f, -0.3f);
+        shader.SetVector3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+        shader.SetVector3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+        shader.SetVector3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+         	    
+        // point light 1
+        shader.SetVector3("pointLights[0].position", pointLightPositions[0]);
+        shader.SetVector3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
+        shader.SetVector3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
+        shader.SetVector3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
+        shader.SetFloat("pointLights[0].constant", 1.0f);
+        shader.SetFloat("pointLights[0].linear", 0.09f);
+        shader.SetFloat("pointLights[0].quadratic", 0.032f);
+        // point light 2
+        shader.SetVector3("pointLights[1].position", pointLightPositions[1]);
+        shader.SetVector3("pointLights[1].ambient", 0.05f, 0.05f, 0.6f);
+        shader.SetVector3("pointLights[1].diffuse", 1.0f, 0.8f, 0.8f);
+        shader.SetVector3("pointLights[1].specular", 1.0f, 1.0f, 1.0f);
+        shader.SetFloat("pointLights[1].constant", 1.0f);
+        shader.SetFloat("pointLights[1].linear", 0.09f);
+        shader.SetFloat("pointLights[1].quadratic", 0.032f);
+        // point light 3
+        shader.SetVector3("pointLights[2].position", pointLightPositions[2]);
+        shader.SetVector3("pointLights[2].ambient", 0.05f, 0.05f, 0.05f);
+        shader.SetVector3("pointLights[2].diffuse", 0.8f, 0.8f, 0.8f);
+        shader.SetVector3("pointLights[2].specular", 1.0f, 1.0f, 1.0f);
+        shader.SetFloat("pointLights[2].constant", 1.0f);
+        shader.SetFloat("pointLights[2].linear", 0.09f);
+        shader.SetFloat("pointLights[2].quadratic", 0.032f);
+        // point light 4
+        shader.SetVector3("pointLights[3].position", pointLightPositions[3]);
+        shader.SetVector3("pointLights[3].ambient", 0.05f, 0.05f, 0.05f);
+        shader.SetVector3("pointLights[3].diffuse", 0.8f, 0.8f, 0.8f);
+        shader.SetVector3("pointLights[3].specular", 1.0f, 1.0f, 1.0f);
+        shader.SetFloat("pointLights[3].constant", 1.0f);
+        shader.SetFloat("pointLights[3].linear", 0.09f);
+        shader.SetFloat("pointLights[3].quadratic", 0.032f);
+        // spotLight
+        shader.SetVector3("spotLight.position", viewPos);
+        shader.SetVector3("spotLight.direction", viewForwardDir);
+        shader.SetVector3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+        shader.SetVector3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+        shader.SetVector3("spotLight.specular", 1.0f, 1.0f, 1.0f);
+        shader.SetFloat("spotLight.constant", 1.0f);
+        shader.SetFloat("spotLight.linear", 0.09f);
+        shader.SetFloat("spotLight.quadratic", 0.032f);
+        shader.SetFloat("spotLight.cutOff", glm::cos(glm::radians(10.5f)));
+        shader.SetFloat("spotLight.outerCutOff", glm::cos(glm::radians(12.5f)));
 
         // View and projection transformations
         glm::mat4 view = camera.GetCameraView();
@@ -203,16 +245,19 @@ int main() {
         }
 
         // Render light
-        // glm::mat4 model = glm::mat4(1.0f);
-        // model = glm::translate(model, lightPos);
-        // model = glm::scale(model, glm::vec3(0.2f));
-        // lightShader.Bind();
-        // lightShader.SetMatrix4("u_view", view);
-        // lightShader.SetMatrix4("u_projection", projection);
-        // lightShader.SetMatrix4("u_model", model);
+        lightVAO.Bind();
+        lightShader.Bind();
+        lightShader.SetMatrix4("u_view", view);
+        lightShader.SetMatrix4("u_projection", projection);
+        for (unsigned int i = 0; i < 4; i++) {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, pointLightPositions[i]);
+            model = glm::scale(model, glm::vec3(0.2f));
 
-        // lightVAO.Bind();
-        // glDrawArrays(GL_TRIANGLES, 0, 36);
+            lightShader.SetMatrix4("u_model", model);
+
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
         
         glfwSwapBuffers(window);
         glfwPollEvents();
