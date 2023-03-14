@@ -24,7 +24,11 @@ Texture::Texture(const std::string& path)
         m_textureData = stbi_load(path.c_str(), &m_width, &m_height, &m_BPP, 0);
 
          if (m_textureData) {
-            GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, m_textureData));
+            GLenum format;
+            if (m_BPP == 1) {format = GL_RED;}
+            else if (m_BPP == 3) {format = GL_RGB;}
+            else {format = GL_RGBA;}
+            GLCall(glTexImage2D(GL_TEXTURE_2D, 0, format, m_width, m_height, 0, format, GL_UNSIGNED_BYTE, m_textureData));
             GLCall(glGenerateMipmap(GL_TEXTURE_2D));
         } else {
             std::cout << "Failed to load texture" << std::endl;
