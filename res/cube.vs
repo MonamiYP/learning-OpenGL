@@ -13,8 +13,9 @@ uniform mat4 u_view;
 uniform mat4 u_projection;
 
 void main() {
-    gl_Position = u_projection * u_view * u_model * position;
     fragmentPos = vec3(u_model * position);
-    normalVector = normal;
+    normalVector = mat3(transpose(inverse(u_model))) * normal;
     textureCoords = texCoords;
+
+    gl_Position = u_projection * u_view * u_model * position;
 }

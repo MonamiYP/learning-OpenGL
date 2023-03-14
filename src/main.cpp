@@ -107,7 +107,20 @@ int main() {
      0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
     -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
     -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
-};
+    };
+
+    glm::vec3 cubePositions[] = {
+    glm::vec3( 0.0f,  0.0f,  0.0f),
+    glm::vec3( 2.0f,  5.0f, -15.0f),
+    glm::vec3(-1.5f, -2.2f, -2.5f),
+    glm::vec3(-3.8f, -2.0f, -12.3f),
+    glm::vec3( 2.4f, -0.4f, -3.5f),
+    glm::vec3(-1.7f,  3.0f, -7.5f),
+    glm::vec3( 1.3f, -2.0f, -2.5f),
+    glm::vec3( 1.5f,  2.0f, -2.5f),
+    glm::vec3( 1.5f,  0.2f, -1.5f),
+    glm::vec3(-1.3f,  1.0f, -1.5f)
+    };
 
     VertexArray cube_VAO;
     VertexBuffer cube_VBO(cube_vertices, sizeof(cube_vertices));
@@ -155,36 +168,51 @@ int main() {
         // Apply shaders
         shader.Bind();
         glm::vec3 viewPos = camera.GetPosition();
+        glm::vec3 viewForwardDir = camera.GetForwards();
         shader.SetVector3("u_viewPos", viewPos);
-        shader.SetFloat("material.shininess", 64.0f);
+        shader.SetFloat("material.shininess", 32.0f);
 
-        shader.SetVector3("light.position", lightPos);
-        shader.SetVector3("light.ambient",  0.3f, 0.3f, 0.3f);
-        shader.SetVector3("light.diffuse",  0.5f, 0.5f, 0.5f);
+        //shader.SetVector3("light.position", lightPos);
+        //shader.SetVector3("light.direction", -0.2f, -1.0f, -0.3f); 	    
+        shader.SetVector3("light.ambient",  0.1f, 0.1f, 0.1f);
+        shader.SetVector3("light.diffuse",  0.8f, 0.8f, 0.8f);
         shader.SetVector3("light.specular", 1.0f, 1.0f, 1.0f);
+        shader.SetFloat("light.constant", 1.0f);
+        shader.SetFloat("light.linear", 0.09f);
+        shader.SetFloat("light.quadratic", 0.032f);
 
-        // Render cube
+        shader.SetVector3("light.position", viewPos);
+        shader.SetVector3("light.direction", viewForwardDir);
+        shader.SetFloat("light.cutOff", glm::cos(glm::radians(10.5f)));
+        shader.SetFloat("light.outerCutOff", glm::cos(glm::radians(12.5f)));
+
+        // View and projection transformations
         glm::mat4 view = camera.GetCameraView();
         glm::mat4 projection = glm::perspective(camera.GetFOV(), WINDOW_WIDTH/WINDOW_HEIGHT, 0.1f, 100.0f);
-        glm::mat4 model = glm::mat4(1.0f);
         shader.SetMatrix4("u_view", view);
         shader.SetMatrix4("u_projection", projection);
-        shader.SetMatrix4("u_model", model);
 
+        // Render cubes
         cube_VAO.Bind();
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        for (unsigned int i = 0; i < 10; i++) {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, cubePositions[i]);
+            model = glm::rotate(model, glm::radians(20.0f*i), glm::vec3(1.0f, 0.3f, 0.5f));
+            shader.SetMatrix4("u_model", model);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
         // Render light
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, lightPos);
-        model = glm::scale(model, glm::vec3(0.2f));
-        lightShader.Bind();
-        lightShader.SetMatrix4("u_view", view);
-        lightShader.SetMatrix4("u_projection", projection);
-        lightShader.SetMatrix4("u_model", model);
+        // glm::mat4 model = glm::mat4(1.0f);
+        // model = glm::translate(model, lightPos);
+        // model = glm::scale(model, glm::vec3(0.2f));
+        // lightShader.Bind();
+        // lightShader.SetMatrix4("u_view", view);
+        // lightShader.SetMatrix4("u_projection", projection);
+        // lightShader.SetMatrix4("u_model", model);
 
-        lightVAO.Bind();
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        // lightVAO.Bind();
+        // glDrawArrays(GL_TRIANGLES, 0, 36);
         
         glfwSwapBuffers(window);
         glfwPollEvents();

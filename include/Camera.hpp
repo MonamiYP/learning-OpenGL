@@ -11,7 +11,7 @@ enum CameraMovementDir {
 class Camera {
     private:
         glm::vec3 m_position;
-        glm::vec3 m_front;
+        glm::vec3 m_forwards;
         glm::vec3 m_up;
         glm::vec3 m_right;
         glm::vec3 m_worldUp;
@@ -36,4 +36,5 @@ class Camera {
 
         float GetFOV();
         glm::vec3 GetPosition();
+        glm::vec3 GetForwards();
 };

@@ -1,7 +1,7 @@
 #include "Camera.hpp"
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) :
-m_front(glm::vec3(0.0f, 0.0f, -1.0f)), m_movementSpeed(5.0f), m_mouseSensitivity(0.1f), m_fov(40.0f) {
+m_forwards(glm::vec3(0.0f, 0.0f, -1.0f)), m_movementSpeed(5.0f), m_mouseSensitivity(0.1f), m_fov(40.0f) {
     m_position = position;
     m_worldUp = up;
     m_yaw = yaw;
@@ -11,20 +11,20 @@ m_front(glm::vec3(0.0f, 0.0f, -1.0f)), m_movementSpeed(5.0f), m_mouseSensitivity
 }
 
 glm::mat4 Camera::GetCameraView() {
-    return glm::lookAt(m_position, m_position + m_front, m_up);
+    return glm::lookAt(m_position, m_position + m_forwards, m_up);
 }
 
 void Camera::ProcessKeyboardInput(CameraMovementDir dir, float deltaTime) {
     float cameraSpeed = m_movementSpeed * deltaTime;
 
     if (dir == UP)
-        m_position += cameraSpeed * m_front;
+        m_position += cameraSpeed * m_forwards;
     if (dir == DOWN)
-        m_position -= cameraSpeed * m_front;
+        m_position -= cameraSpeed * m_forwards;
     if (dir == LEFT)
-        m_position -= cameraSpeed * glm::normalize(glm::cross(m_front, m_up));
+        m_position -= cameraSpeed * glm::normalize(glm::cross(m_forwards, m_up));
     if (dir == RIGHT)
-        m_position += cameraSpeed * glm::normalize(glm::cross(m_front, m_up));
+        m_position += cameraSpeed * glm::normalize(glm::cross(m_forwards, m_up));
 }
 
 void Camera::ProcessMouseInput(float xOffset, float yOffset) {
@@ -50,9 +50,9 @@ void Camera::UpdateVectors() {
     frontDir.y = sin(glm::radians(m_pitch));
     frontDir.z = sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
 
-    m_front = glm::normalize(frontDir);
-    m_right = glm::normalize(glm::cross(m_front, m_worldUp));
-    m_up  = glm::normalize(glm::cross(m_right, m_front));
+    m_forwards = glm::normalize(frontDir);
+    m_right = glm::normalize(glm::cross(m_forwards, m_worldUp));
+    m_up  = glm::normalize(glm::cross(m_right, m_forwards));
 }
 
 float Camera::GetFOV() {
@@ -61,4 +61,8 @@ float Camera::GetFOV() {
 
 glm::vec3 Camera::GetPosition() {
     return m_position;
+}
+
+glm::vec3 Camera::GetForwards() {
+    return m_forwards;
 }
