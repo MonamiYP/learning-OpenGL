@@ -18,13 +18,17 @@ void Camera::ProcessKeyboardInput(CameraMovementDir dir, float deltaTime) {
     float cameraSpeed = m_movementSpeed * deltaTime;
 
     if (dir == UP)
-        m_position += cameraSpeed * m_forwards;
+        m_position += cameraSpeed * m_up;
     if (dir == DOWN)
-        m_position -= cameraSpeed * m_forwards;
+        m_position -= cameraSpeed * m_up;
     if (dir == LEFT)
         m_position -= cameraSpeed * glm::normalize(glm::cross(m_forwards, m_up));
     if (dir == RIGHT)
         m_position += cameraSpeed * glm::normalize(glm::cross(m_forwards, m_up));
+    if (dir == FORWARDS)
+        m_position += cameraSpeed * m_forwards;
+    if (dir == BACKWARDS)
+        m_position -= cameraSpeed * m_forwards;
 }
 
 void Camera::ProcessMouseInput(float xOffset, float yOffset) {

@@ -5,7 +5,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 enum CameraMovementDir {
-    UP, DOWN, LEFT, RIGHT
+    UP, DOWN, LEFT, RIGHT, FORWARDS, BACKWARDS
 };
 
 class Camera {
