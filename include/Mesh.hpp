@@ -15,7 +15,7 @@ struct Vertex {
     glm::vec2 texCoords;
 };
 
-struct Texture {
+struct MeshTexture {
     unsigned int id;
     std::string type;
     std::string path;
@@ -28,8 +28,8 @@ class Mesh {
     public:
         std::vector<Vertex> vertices;
         std::vector<unsigned int> indices;
-        std::vector<Texture> textures;
+        std::vector<MeshTexture> textures;
 
-        Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const std::vector<Texture>& textures);
+        Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const std::vector<MeshTexture>& textures);
         void Draw(Shader& shader);
 };

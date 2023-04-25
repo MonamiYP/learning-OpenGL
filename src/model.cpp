@@ -34,7 +34,7 @@ void Model::ProcessNode(aiNode* node, const aiScene* scene) {
 Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene) {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
-    std::vector<Texture> textures;
+    std::vector<MeshTexture> textures;
 
     for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
         Vertex vertex;
@@ -55,7 +55,7 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene) {
             vertex.normal = vector;
         }
 
-        // Texture coords
+        // MeshTexture coords
         if (mesh->mTextureCoords[0]) {
             glm::vec2 vec;
             vec.x = mesh->mTextureCoords[0][i].x;
@@ -76,17 +76,17 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene) {
     //Process material
     if (mesh->mMaterialIndex >= 0) {
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-        std::vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+        std::vector<MeshTexture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-        std::vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+        std::vector<MeshTexture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     }
 
     return Mesh(vertices, indices, textures);
 }
 
-std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName) {
-    std::vector<Texture> textures;
+std::vector<MeshTexture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName) {
+    std::vector<MeshTexture> textures;
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
         aiString str;
         mat->GetTexture(type, i, &str);
@@ -101,7 +101,7 @@ std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType 
         }
 
         if (!skip) {
-            Texture texture;
+            MeshTexture texture;
             texture.id = TextureFromFile(str.C_Str(), directory);
             texture.type = typeName;
             texture.path = str.C_Str();
@@ -116,4 +116,37 @@ std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType 
 void Model::Draw(Shader& shader) {
     for (unsigned int i = 0; i < meshes.size(); i++)
         meshes[i].Draw(shader);
+}
+
+unsigned int Model::TextureFromFile(const char* path, const std::string& directory) {
+    std::string filename = std::string(path);
+    filename = directory + '/' + filename;
+
+    stbi_set_flip_vertically_on_load(1);
+
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    int width, height, BPP;
+    unsigned char* textureData = stbi_load(filename.c_str(), &width, &height, &BPP, 0);
+    if (textureData) {
+            GLenum format;
+            if (BPP == 1) {format = GL_RED;}
+            else if (BPP == 3) {format = GL_RGB;}
+            else {format = GL_RGBA;}
+            glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, textureData);
+            glGenerateMipmap(GL_TEXTURE_2D);
+        } else {
+            std::cout << "Failed to load texture" << std::endl;
+    }
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    stbi_image_free(textureData);
+
+    return textureID;
 }

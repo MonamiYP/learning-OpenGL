@@ -13,6 +13,7 @@
 #include <fstream>
 #include <cmath>
 
+#include "Model.hpp"
 #include "Shader.hpp"
 #include "Renderer.hpp"
 #include "VertexBuffer.hpp"
@@ -175,6 +176,8 @@ int main() {
     shader.SetInt("material.diffuse", 0);
     shader.SetInt("material.specular", 1);
 
+    Model backpackModel("res/assets/backpack/backpack.obj");
+
     Renderer renderer;
 
     while (!glfwWindowShouldClose(window)) {
@@ -248,6 +251,9 @@ int main() {
         shader.SetMatrix4("u_view", view);
         shader.SetMatrix4("u_projection", projection);
 
+        texture.Bind();
+        specular_texture.Bind(1);
+
         // Render cubes
         cube_VAO.Bind();
         for (unsigned int i = 0; i < 10; i++) {
@@ -272,22 +278,30 @@ int main() {
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
+
+        // Render backpack
+        shader.Bind();
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, 4.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+        shader.SetMatrix4("u_model", model);
+        backpackModel.Draw(shader);
         
         // ImGui stuff
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-
         if (guiEnable) {
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplGlfw_NewFrame();
+            ImGui::NewFrame();
+
             static float f = 0.0f;
             ImGui::Begin("A window");
             ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
             ImGui::End();
-        }
 
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+            ImGui::Render();
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        }
 
         glfwSwapBuffers(window);
         glfwPollEvents();
