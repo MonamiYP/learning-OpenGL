@@ -5,10 +5,10 @@ Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>&
     this->indices = indices;
     this->textures = textures;
 
-    setupMesh();
+    SetupMesh();
 }
 
-void Mesh::setupMesh() {
+void Mesh::SetupMesh() {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -33,7 +33,7 @@ void Mesh::setupMesh() {
     glBindVertexArray(0);
 }
 
-void Mesh::draw(Shader& shader) {
+void Mesh::Draw(Shader& shader) {
     unsigned int diffuseNo = 1;
     unsigned int specularNo = 1;
 

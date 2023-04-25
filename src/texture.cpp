@@ -23,7 +23,7 @@ Texture::Texture(const std::string& path)
 
         m_textureData = stbi_load(path.c_str(), &m_width, &m_height, &m_BPP, 0);
 
-         if (m_textureData) {
+        if (m_textureData) {
             GLenum format;
             if (m_BPP == 1) {format = GL_RED;}
             else if (m_BPP == 3) {format = GL_RGB;}

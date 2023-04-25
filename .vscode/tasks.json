@@ -15,7 +15,7 @@
 				"${workspaceFolder}/src/*.cpp",
 				"${workspaceFolder}/src/*.c",
 				"${workspaceFolder}/include/imgui/*.cpp",
-				"${workspaceFolder}/lib/libglfw.3.3.dylib",
+				"${workspaceFolder}/lib/*",
 				"-o",
 				"${workspaceFolder}/run",
 				"-framework",
