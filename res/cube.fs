@@ -50,7 +50,7 @@ struct PointLight {
     vec3 specular;
 };
 
-#define NO_POINT_LIGHTS 4
+#define NO_POINT_LIGHTS 1
 uniform DirectionalLight dirLight;
 uniform PointLight pointLights[NO_POINT_LIGHTS];
 uniform SpotLight spotLight;
